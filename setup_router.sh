@@ -88,11 +88,11 @@ EOF
     # Physical WAN kept manual; VLAN subif is the real WAN
     cat <<EOF
 # === WAN (PHY) ===
-auto ${WAN_IF}
+allow-hotplug ${WAN_IF}
 iface ${WAN_IF} inet manual
 
 # === WAN (VLAN ${WAN_VLAN}) ===
-auto ${WAN_DEV}
+allow-hotplug ${WAN_DEV}
 iface ${WAN_DEV} inet dhcp
     vlan-raw-device ${WAN_IF}
     pre-up sh -c "echo 0 > /proc/sys/net/ipv4/conf/\$IFACE/rp_filter"
@@ -103,7 +103,7 @@ EOF
   else
     cat <<EOF
 # === WAN ===
-auto ${WAN_DEV}
+allow-hotplug ${WAN_DEV}
 iface ${WAN_DEV} inet dhcp
     pre-up sh -c "echo 0 > /proc/sys/net/ipv4/conf/\$IFACE/rp_filter"
     post-up sh -c "echo 2 > /proc/sys/net/ipv6/conf/\$IFACE/accept_ra"
@@ -114,7 +114,7 @@ EOF
 
   cat <<EOF
 # === LAN ===
-auto ${LAN_IF}
+allow-hotplug ${LAN_IF}
 iface ${LAN_IF} inet static
     address ${LAN_GW}
     netmask 255.255.255.0
