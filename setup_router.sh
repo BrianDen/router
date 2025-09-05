@@ -405,11 +405,18 @@ cat >/etc/systemd/system/igmpproxy.service.d/override.conf <<EOF
 [Unit]
 Wants=network-online.target sys-subsystem-net-devices-${WAN_DEV}.device sys-subsystem-net-devices-${LAN_IF}.device
 After=network-online.target sys-subsystem-net-devices-${WAN_DEV}.device sys-subsystem-net-devices-${LAN_IF}.device
+BindsTo=sys-subsystem-net-devices-${WAN_DEV}.device sys-subsystem-net-devices-${LAN_IF}.device
 [Service]
 Restart=always
 RestartSec=5
-ExecStartPre=/usr/bin/test -e /sys/class/net/${WAN_DEV}
-ExecStartPre=/usr/bin/test -e /sys/class/net/${LAN_IF}
+# Block start until WAN has an IPv4 address and LAN link is up
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do \
+  ip link show ${WAN_DEV} >/dev/null 2>&1 || { sleep 1; continue; }; \
+  ip link show ${LAN_IF} >/dev/null 2>&1 || { sleep 1; continue; }; \
+  ip -4 addr show dev ${WAN_DEV} | grep -q "inet " || { sleep 1; continue; }; \
+  [ "$(cat /sys/class/net/${LAN_IF}/operstate 2>/dev/null)" = "up" ] || { sleep 1; continue; }; \
+  exit 0; \
+done; echo "WAN/LAN not ready" >&2; exit 1'
 EOF
 
 echo "[*] Enable and start core services…"
