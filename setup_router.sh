@@ -410,11 +410,11 @@ BindsTo=sys-subsystem-net-devices-eno1.device sys-subsystem-net-devices-enx00f00
 Restart=always
 RestartSec=5
 # Block start until WAN has an IPv4 address and LAN link is up
-ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do \
+ExecStartPre=/bin/sh -c 'for i in \$(seq 1 60); do \
   ip link show eno1 >/dev/null 2>&1 || { sleep 1; continue; }; \
   ip link show enx00f001e00c2f >/dev/null 2>&1 || { sleep 1; continue; }; \
   ip -4 addr show dev eno1 | grep -q "inet " || { sleep 1; continue; }; \
-  [ "$(cat /sys/class/net/enx00f001e00c2f/operstate 2>/dev/null)" = "up" ] || { sleep 1; continue; }; \
+  [ "\$(cat /sys/class/net/enx00f001e00c2f/operstate 2>/dev/null)" = "up" ] || { sleep 1; continue; }; \
   exit 0; \
 done; echo "WAN/LAN not ready" >&2; exit 1'
 EOF
