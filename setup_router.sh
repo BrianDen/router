@@ -401,7 +401,7 @@ EOF
 
 # igmpproxy waits for WAN+LAN devices
 mkdir -p /etc/systemd/system/igmpproxy.service.d
-sudo tee /etc/systemd/system/igmpproxy.service.d/override.conf >/dev/null <<'EOF'
+sudo tee /etc/systemd/system/igmpproxy.service.d/override.conf >/dev/null <<EOF
 [Unit]
 Wants=network-online.target sys-subsystem-net-devices-${WAN_DEV}.device sys-subsystem-net-devices-enx00f001e00c2f.device
 After=network-online.target sys-subsystem-net-devices-eno1.device sys-subsystem-net-devices-enx00f001e00c2f.device
